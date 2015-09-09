@@ -34,3 +34,6 @@ xmlrpc.php
 /profiles
 /scripts
 /themes
+
+# Getting rid of .DS_Store
+**/.DS_Store
