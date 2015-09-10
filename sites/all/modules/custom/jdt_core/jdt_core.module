@@ -33,7 +33,21 @@ function jdt_core_install() {
   foreach ($array as $item) {
     variable_set($item->name, $item->value);
   }
-
+  $module_list = array("views",
+    "features",
+    "strongarm",
+    "context",
+    "pathauto",
+    "diff",
+    "libraries",
+    "jquery_update",
+    "devel",
+    "module_filter",
+    "admin_menu",
+    "food",
+    "site_settings"
+    );
+  module_enable($module_list);
 }
 
 /**
