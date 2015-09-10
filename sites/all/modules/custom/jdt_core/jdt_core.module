@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_help().
+ * Implements hook_help(). adding something
  *
  * Displays help and module information. *  */
 function jdt_core_help($path, $arg) {
