@@ -23,32 +23,7 @@ function jdt_core_help($path, $arg) {
 
 
 
-/**
- * Implements hook_install().
- *
- * Helper function for updating global variables.
- */
-function jdt_core_install() {
-  $array = get_variable_list();
-  foreach ($array as $item) {
-    variable_set($item->name, $item->value);
-  }
-  $module_list = array("views",
-    "features",
-    "strongarm",
-    "context",
-    "pathauto",
-    "diff",
-    "libraries",
-    "jquery_update",
-    "devel",
-    "module_filter",
-    "admin_menu",
-    "food",
-    "site_settings"
-    );
-  module_enable($module_list);
-}
+
 
 /**
  * Copied code exported from Features module.
@@ -512,7 +487,7 @@ function get_variable_list() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'site_name';
-  $strongarm->value = 'hello globals';
+  $strongarm->value = 'this show up then everything is good.';
   $export['site_name'] = $strongarm;
 
   $strongarm = new stdClass();
