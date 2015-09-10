@@ -6,3 +6,27 @@
  */
 
 
+/**
+ * Implements hook_update_n().
+ *
+ * Enables themes required when updating.
+ */
+function jdt_core_update_7100() {
+  $module_list = array("views",
+    "features",
+    "strongarm",
+    "context",
+    "pathauto",
+    "diff",
+    "libraries",
+    "jquery_update",
+    "devel",
+    "module_filter",
+    "admin_menu",
+    "food",
+    "site_settings"
+    );
+  module_enable($module_list);
+}
+
+
