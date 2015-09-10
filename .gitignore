@@ -1,39 +1,43 @@
 # Ignore configuration files that may contain sensitive information.
-sites/*/*settings*.php
-
-# Ignore paths that contain generated content.
-files/
+#sites/*/settings*.php
 sites/*/files
-sites/*/private
+sites/*.dev
+#sites/*/settings.php
+# Ignore paths that contain user-generated content.
 
-# Ignore default text files
-robots.txt
-/CHANGELOG.txt
-/COPYRIGHT.txt
-/INSTALL*.txt
-/LICENSE.txt
-/MAINTAINERS.txt
-/UPGRADE.txt
-/README.txt
-sites/all/README.txt
-sites/all/modules/README.txt
-sites/all/themes/README.txt
+#ignore sass-cache
+sites/all/modules/custom/*/.sass-cache/
+sites/all/themes/*/.sass-cache/
+.sass-cache
 
-# Ignore everything but the "sites" folder ( for non core developer )
-.htaccess
-web.config
-authorize.php
-cron.php
-index.php
-install.php
-update.php
-xmlrpc.php
-/includes
-/misc
-/modules
-/profiles
-/scripts
-/themes
+#ignore Gulp generated files
+sites/all/themes/*/node_modules
 
-# Getting rid of .DS_Store
-**/.DS_Store
+#ignore Mac System files
+.DS_Store
+*.DS_Store
+
+#ignore php storm system files
+.idea/
+
+# phpstorm project specific settings
+atlassian-ide-plugin.xml
+
+#ignore eclipse system files
+.project
+.settings
+.settings/com.aptana.editor.php.prefs
+
+#ignore komodo system files
+*.komodoproject
+
+# ignore dev module
+sites/all/modules/contrib/masquerade
+sites/all/modules/contrib/coder
+sites/all/modules/contrib/stage_file_proxy
+sites/all/modules/contrib/coffee
+sites/all/modules/contrib/devel
+*FirePHPCore
+#ignore sample data set
+#sites/all/modules/custom/sbac_content_types/sbac_alignment/data/ela.*.json
+#sites/all/modules/custom/sbac_content_types/sbac_alignment/data/ma.*.json

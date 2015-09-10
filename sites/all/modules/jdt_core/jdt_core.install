@@ -1,8 +1,0 @@
-<?php
-
-/**
- * @file
- * Calls jdt_installer() to apply all variables.
- */
-
-  jdt_installer();
