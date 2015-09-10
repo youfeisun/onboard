@@ -1,0 +1,4 @@
+name = JDT Core
+description = My little on board module.
+core = 7.x
+dependencies[] = strongarm

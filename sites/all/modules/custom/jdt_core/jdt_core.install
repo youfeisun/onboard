@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Doing nothing?
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Helper function for updating global variables.
+ */
+function jdt_core_enable() {
+  $array = get_variable_list();
+  foreach ($array as $item) {
+    variable_set($item->name, $item->value);
+  }
+ $module_list = array("views",
+    "features",
+    "strongarm",
+    "context",
+    "pathauto",
+    "diff",
+    "libraries",
+    "jquery_update",
+    "devel",
+    "module_filter",
+    "admin_menu",
+    "food",
+    "site_settings"
+    );
+  module_enable($module_list);
+  $disable_list = array("toolbar","shortcut","overlay");
+  module_disable($disable_list);
+}
+
+
+
