@@ -24,7 +24,10 @@ function jdt_core_enable() {
     "module_filter",
     "admin_menu",
     "food",
-    "site_global_settings"
+    "site_global_settings",
+    "date_all_day",
+    "date_popup",
+    "admin_menu_toolbar"
     );
   module_enable($module_list);
   $disable_list = array("toolbar",
