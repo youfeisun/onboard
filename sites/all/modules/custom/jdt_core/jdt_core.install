@@ -12,6 +12,7 @@
  */
 function jdt_core_enable() {
   $module_list = array("views",
+    "views_ui",
     "features",
     "strongarm",
     "context",
