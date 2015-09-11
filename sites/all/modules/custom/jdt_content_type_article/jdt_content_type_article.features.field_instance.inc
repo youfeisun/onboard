@@ -124,7 +124,7 @@ function jdt_content_type_article_field_default_field_instances() {
           'image_style' => '',
         ),
         'type' => 'image',
-        'weight' => 2,
+        'weight' => 6,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -152,7 +152,7 @@ function jdt_content_type_article_field_default_field_instances() {
       'active' => 1,
       'module' => 'image',
       'settings' => array(
-        'preview_image_style' => 'thumbnail',
+        'preview_image_style' => '200x200',
         'progress_indicator' => 'throbber',
       ),
       'type' => 'image_image',
