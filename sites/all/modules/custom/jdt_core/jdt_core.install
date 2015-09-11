@@ -4,13 +4,8 @@
  * @file
  * Doing nothing?
  */
-
-/**
- * Implements hook_install().
- *
- * Helper function for updating global variables.
- */
-function jdt_core_enable() {
+/*
+  dpm("jdt_core.install has been running");
   $array = get_variable_list();
   foreach ($array as $item) {
     variable_set($item->name, $item->value);
@@ -32,7 +27,6 @@ function jdt_core_enable() {
   module_enable($module_list);
   $disable_list = array("toolbar","shortcut","overlay");
   module_disable($disable_list);
-}
 
 
-
+*/
