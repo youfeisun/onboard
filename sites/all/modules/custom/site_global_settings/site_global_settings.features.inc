@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * site_settings.features.inc
+ * site_global_settings.features.inc
  */
 
 /**
  * Implements hook_ctools_plugin_api().
  */
-function site_settings_ctools_plugin_api($module = NULL, $api = NULL) {
+function site_global_settings_ctools_plugin_api($module = NULL, $api = NULL) {
   if ($module == "strongarm" && $api == "strongarm") {
     return array("version" => "1");
   }

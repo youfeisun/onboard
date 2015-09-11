@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the site settings feature.
- */
-
-include_once 'site_settings.features.inc';

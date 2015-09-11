@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the site global settings feature.
+ */
+
+include_once 'site_global_settings.features.inc';
