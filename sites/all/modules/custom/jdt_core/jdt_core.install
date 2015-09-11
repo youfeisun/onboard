@@ -27,7 +27,10 @@ function jdt_core_enable() {
     "site_global_settings",
     "date_all_day",
     "date_popup",
-    "admin_menu_toolbar"
+    "admin_menu_toolbar",
+    "references",
+    "node_reference",
+    "user_reference"
     );
   module_enable($module_list);
   $disable_list = array("toolbar",
