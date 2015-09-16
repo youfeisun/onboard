@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Setting up the database schema and enable the stored permission information.
+ */
+
+/**
+ * Implements hook_enable().
+ *
+ * Enable the feature storing permission informations.
+ */
+function jdt_user_notes_enable() {
+  $module_list = array("jdt_user_notes_permissions",
+  );
+  module_enable($module_list);
+}
+
+/**
+ * Implements hook_schema().
+ *
+ * Setting up database for storing note records.
+ */
+function jdt_user_notes_schema() {
+  $schema['jdt_user_notes_table'] = array(
+    'description' => 'The table for storing notes information.',
+    'fields' => array(
+      'note_id' => array(
+        'description' => 'The identifier for a note.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'article_nid' => array(
+        'description' => 'The article note associated to.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'author_uid' => array(
+        'description' => 'The owner of the note.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'note_title' => array(
+        'description' => 'The note title.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'note_text' => array(
+        'description' => 'The note content.',
+        'type' => 'text',
+        'size' => 'big',
+      ),
+    ),
+    'primary key' => array('note_id'),
+  );
+  return $schema;
+}
+
+/**
+ * Implements hook_disable().
+ *
+ * Ensure the Feature is uninstalled when the module is diabled.
+ */
+function jdt_user_notes_disable() {
+  if (module_exists('jdt_user_notes_permissions')) {
+    module_disable(array('jdt_user_notes_permissions'));
+    drupal_uninstall_modules(array('jdt_user_notes_permissions'));
+  }
+}

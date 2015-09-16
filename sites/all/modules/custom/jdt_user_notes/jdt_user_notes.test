@@ -1,0 +1,121 @@
+<?php
+
+/**
+ * @file
+ * The testing scripts for curd functions.
+ */
+
+/**
+ * The JDT testing class.
+ */
+class JDTUserNotesTests extends DrupalWebTestCase {
+  /**
+   * Display the info on testing, group the tests.
+   */
+  public static function getInfo() {
+    return array(
+    // The human readable name of the test case.
+      'name' => 'JDT CURD Tests',
+    // A short description of the tests this case performs.
+      'description' => 'Tests the basic function of CURD.',
+    // The group that this case belongs too, used for grouping tests together
+    // in the UI.
+      'group' => 'JDT',
+    );
+  }
+  /**
+   * Testing setup.
+   *
+   * Here we can create a user, and some sample data to test permissions. etc.
+   */
+  public function setUp() {
+    parent::setUp(array('jdt_user_notes'));
+  }
+
+  /**
+   * Create function test.
+   */
+  public function testCreate() {
+    $uid = rand();
+    $nid = rand();
+    $text = $this->randomString(64);
+    $title = $this->randomString(64);
+    $note_id = jdt_user_notes_create_note($uid, $nid, $title, $text);
+
+    $record = db_select('jdt_user_notes_table', 't')
+      ->fields('t')
+      ->condition('note_id', $note_id)
+      ->execute()
+      ->fetch();
+
+    $this->assertEqual($title, $record->note_title, 'Checks if the title has been created');
+    $this->assertEqual($text, $record->note_text, 'Checks if the record has been created');
+    $this->assertEqual($uid, $record->author_uid, 'Checks if the uid stores correctly');
+    $this->assertEqual($nid, $record->article_nid, 'Checks if the nid stores correctly');
+  }
+  /**
+   * Update function test.
+   */
+  public function testUpdate() {
+    $uid = rand();
+    $nid = rand();
+    $title = $this->randomString(64);
+    $text = $this->randomString(64);
+    $note_id = jdt_user_notes_create_note($uid, $nid, $title, $text);
+
+    $uid = rand();
+    $nid = rand();
+    $title = $this->randomString(64);
+    $text = $this->randomString(64);
+    jdt_user_notes_update_note($note_id, $uid, $nid, $title, $text);
+
+    $record = db_select('jdt_user_notes_table', 't')
+      ->fields('t')
+      ->condition('note_id', $note_id)
+      ->execute()
+      ->fetch();
+
+    $this->assertEqual($title, $record->note_title, 'Checks if the title has been updated');
+    $this->assertEqual($text, $record->note_text, 'Checks if the record has been updated');
+    $this->assertEqual($uid, $record->author_uid, 'Checks if the uid updates correctly');
+    $this->assertEqual($nid, $record->article_nid, 'Checks if the nid updates correctly');
+  }
+  /**
+   * Read function test.
+   */
+  public function testRead() {
+    $uid = rand();
+    $nid = rand();
+    $title = $this->randomString(64);
+    $text = $this->randomString(64);
+    $note_id = jdt_user_notes_create_note($uid, $nid, $title, $text);
+
+    $record = jdt_user_notes_read_note($note_id);
+    $this->assertEqual($title, $record->note_title, 'Checks if the title can be read correctly');
+    $this->assertEqual($text, $record->note_text, 'Checks if the record can be read correctly');
+    $this->assertEqual($uid, $record->author_uid, 'Checks if the uid can be read correctly');
+    $this->assertEqual($nid, $record->article_nid, 'Checks if the nid cab be read correctly');
+  }
+  /**
+   * Delete Function test.
+   */
+  public function testDelete() {
+    $uid = rand();
+    $nid = rand();
+    $title = $this->randomString(64);
+    $text = $this->randomString(64);
+    $note_id = jdt_user_notes_create_note($uid, $nid, $title, $text);
+
+    jdt_user_notes_delete_note($note_id);
+    $record = db_select('jdt_user_notes_table', 't')
+      ->fields('t')
+      ->condition('note_id', $note_id)
+      ->execute()
+      ->fetch();
+
+    $arr = (array) $record;
+
+    $this->assertFalse(empty($arr), 'Checks if the record has been removed');
+  }
+
+}

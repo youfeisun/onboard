@@ -1,0 +1,6 @@
+name = JDT User Notes
+description = My little on board module is getting tough.
+core = 7.x
+
+files[] = jdt_user_notes.test
+dependencies[] = features

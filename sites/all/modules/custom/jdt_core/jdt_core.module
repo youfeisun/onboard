@@ -6,18 +6,18 @@
  */
 
 /**
- * Implements hook_help(). adding something
+ * Implements hook_help().
  *
- * Displays help and module information. *  */
+ * Displays help and module information.
+ */
 function jdt_core_help($path, $arg) {
   $output = "";
   switch ($path) {
     case "admin/help#jdt_core":
-    $output = '<p>' . t("This is a test.") . '</p>';
+      $output = '<p>' . t("This is a test.") . '</p>';
 
-    break;
+      break;
   }
 
   return $output;
 }
-

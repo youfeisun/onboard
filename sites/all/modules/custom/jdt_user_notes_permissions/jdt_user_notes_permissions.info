@@ -1,0 +1,10 @@
+name = jdt_user_notes_permissions
+core = 7.x
+package = Features
+version = 7.x-1.0
+dependencies[] = features
+dependencies[] = jdt_user_notes
+features[features_api][] = api:2
+features[user_permission][] = administer jdt user notes
+features[user_permission][] = editor jdt user notes
+project path = sites/all/custom

@@ -1,0 +1,264 @@
+<?php
+
+/**
+ * @file
+ * The module allows user to add notes into articles.
+ */
+
+module_load_include('inc', 'jdt_user_notes', 'jdt_user_notes_curd');
+
+/**
+ * Implements hook_permission().
+ *
+ * Defined permissions for admin and editor.
+ */
+function jdt_user_notes_permission() {
+  return array(
+    'administer jdt user notes' => array(
+      'title' => t('Adminster JDT user notes.'),
+      'restrict access' => TRUE,
+    ),
+    'editor jdt user notes' => array(
+      'title' => t('The permission to access notes only belong to user.'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_menu().
+ *
+ * Added url path for notes CURD.
+ */
+function jdt_user_notes_menu() {
+  $items['node/%jdt_user_notes_loader/jdt_user_notes/create'] = array(
+    'title' => 'New note',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('jdt_user_notes_create_form', 1),
+    'access arguments' => array('editor jdt user notes'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5,
+  );
+  $items['node/%jdt_user_notes_loader/jdt_user_notes/view'] = array(
+    'title' => 'View notes',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('jdt_user_notes_read_form', 1),
+    'access arguments' => array('editor jdt user notes'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 6,
+  );
+  $items['node/%jdt_user_notes_loader/jdt_user_notes/edit'] = array(
+    // Interesting happens if I use /edit in the path.  see themecallback
+    'title' => 'Edit notes',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('jdt_user_notes_edit_form', 1),
+    'access arguments' => array('editor jdt user notes'),
+    'theme callback' => '',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 7,
+  );
+  return $items;
+}
+
+/**
+ * Detects if the wildcard node ID exists, if not, return a 404 page.
+ */
+function jdt_user_notes_loader_load($nid) {
+  // Might going to need a node type test.
+  $return_val = node_load($nid);
+  if ($return_val != FALSE) {
+    $return_val = $nid;
+  }
+  return $return_val;
+}
+
+/**
+ * Generate the Create Note form.
+ */
+function jdt_user_notes_create_form($form, &$form_state, $nid) {
+  $form = array();
+  $form['jdt_user_notes_title_field'] = array(
+    '#type' => 'textfield',
+    '#title' => t('The note title.'),
+    '#description' => t("Maximum 255 characters"),
+    '#required' => TRUE,
+  );
+  $form['jdt_user_notes_note_field'] = array(
+    '#type' => 'textarea',
+    '#title' => t('The note.'),
+  );
+  $form['actions'] = array(
+    '#type' => 'actions',
+    'submit' => array(
+      '#type' => 'submit',
+      '#value' => 'Create Note',
+      '#submit' => array('jdt_user_notes_create_form_submit'),
+    ),
+  );
+  // Passing nid in the form.
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $nid,
+  );
+
+  return $form;
+}
+
+/**
+ * Handler for submit button in Create note, creates the record in database.
+ */
+function jdt_user_notes_create_form_submit($form, &$form_state) {
+  global $user;
+  jdt_user_notes_create_note($user->uid, $form_state['values']['nid'], $form_state['values']['jdt_user_notes_title_field'], $form_state['values']['jdt_user_notes_note_field']);
+  $form_state['redirect'] = 'node/' . $form_state['values']['nid'] . '/jdt_user_notes/view';
+}
+
+/**
+ * Generate the Read Note form.
+ */
+function jdt_user_notes_read_form($form, &$form_state, $nid) {
+  $form = array();
+  $records = jdt_user_notes_get_note_by_nid($nid);
+
+  foreach ($records as $record) {
+    // For easiness , used disabled forms for Read notes,
+    // better approach will be generating markups for the notes.
+    // Maybe the owner of the note should be displayed.
+    $form_name = 'jdt_user_notes_title_field' . $record->note_id;
+    $form[$form_name] = array(
+      '#type' => 'textfield',
+      '#title' => t('The note title.'),
+      '#disabled' => TRUE,
+      '#default_value' => $record->note_title,
+    );
+
+    $form_name = 'jdt_user_notes_text_field' . $record->note_id;
+    $form[$form_name] = array(
+      '#type' => 'textarea',
+      '#title' => t('The note.'),
+      '#disabled' => TRUE,
+      '#default_value' => $record->note_text,
+    );
+
+    // Seprater between records.
+    $field_name = 'line' . $record->note_id;
+    $form[$field_name] = array(
+      '#type' => 'item',
+      '#markup' => '<hr>',
+    );
+
+  }
+  return $form;
+}
+
+/**
+ * Generating the Edit note form. Only the owner or admin can edit the note.
+ *
+ * Using #name attribute to pass the nid to the submit handler,
+ * there should be a better approach, maybe somewhere I can pass an array.
+ */
+function jdt_user_notes_edit_form($form, &$form_state, $nid) {
+  global $user;
+  $form = array();
+  $records = jdt_user_notes_get_note_by_nid($nid);
+
+  $weight = 0;
+
+  foreach ($records as $record) {
+    $is_owner = $record->author_uid == $user->uid;
+    $is_admin = user_access('administer jdt user notes');
+    $can_edit = $is_owner || $is_admin;
+
+    $field_name = 'jdt_user_notes_title_field' . $record->note_id;
+    $form[$field_name] = array(
+      '#type' => 'textfield',
+      '#title' => t('The note title.'),
+      '#disabled' => !$can_edit,
+      '#required' => TRUE,
+      '#weight' => $weight,
+      '#default_value' => $record->note_title,
+    );
+    $weight++;
+
+    $field_name = 'jdt_user_notes_text_field' . $record->note_id;
+    $form[$field_name] = array(
+      '#type' => 'textarea',
+      '#title' => t('The note.'),
+      '#weight' => $weight,
+      '#disabled' => !$can_edit,
+      '#default_value' => $record->note_text,
+    );
+    $weight++;
+
+    if (!$can_edit) {
+      $field_name = 'info' . $record->note_id;
+      $form[$field_name] = array(
+        '#type' => 'item',
+        '#markup' => t("You are not permitted to edit this note."),
+        '#weight' => $weight,
+      );
+      $weight++;
+    }
+
+    $button_name = 'jdt_user_notes_update_button' . $record->note_id;
+    $form[$button_name] = array(
+      '#type' => 'actions',
+      '#weight' => $weight,
+      '#disabled' => !$can_edit,
+      'submit' => array(
+        '#type' => 'submit',
+        '#value' => 'Update',
+        '#name' => $record->note_id,
+        '#submit' => array('jdt_user_notes_update_form_submit'),
+      ),
+    );
+    $weight++;
+
+    $button_name = 'jdt_user_notes_delete_button' . $record->note_id;
+    $form[$button_name] = array(
+      '#type' => 'actions',
+      '#weight' => $weight,
+      '#disabled' => !$can_edit,
+      'submit' => array(
+        '#type' => 'submit',
+        '#value' => 'Delete Note',
+        '#name' => $record->note_id,
+        '#submit' => array('jdt_user_notes_delete_form_submit'),
+      ),
+    );
+    $weight++;
+
+    $field_name = 'line' . $record->note_id;
+    $form[$field_name] = array(
+      '#type' => 'item',
+      '#markup' => '<hr>',
+      '#weight' => $weight,
+    );
+    $weight++;
+
+  }
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $nid,
+  );
+  return $form;
+}
+
+/**
+ * The Update button handler, which updates the note.
+ */
+function jdt_user_notes_update_form_submit($form, &$form_state) {
+  global $user;
+  $note_id = $form_state['triggering_element']['#name'];
+  $title_field_name = 'jdt_user_notes_title_field' . $note_id;
+  $text_field_name = 'jdt_user_notes_text_field' . $note_id;
+  jdt_user_notes_update_note($note_id, $user->uid, $form_state['values']['nid'], $form_state['values'][$title_field_name], $form_state['values'][$text_field_name]);
+}
+
+/**
+ * The Delete button handler, which deletes the note.
+ */
+function jdt_user_notes_delete_form_submit($form, &$form_state) {
+  $note_id = $form_state['triggering_element']['#name'];
+  jdt_user_notes_delete_note($note_id);
+}

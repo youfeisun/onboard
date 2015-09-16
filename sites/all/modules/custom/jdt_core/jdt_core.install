@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Doing nothing?
+ * Install file for jdt core, mainly usage: enable and disable modules.
  */
 
 /**
  * Implements hook_install().
  *
- * Helper function for updating global variables.
+ * Enable a list of modules, and disable a list of modules.
  */
 function jdt_core_enable() {
   $module_list = array("views",
@@ -30,25 +30,18 @@ function jdt_core_enable() {
     "admin_menu_toolbar",
     "references",
     "node_reference",
-    "user_reference"
-    );
+    "user_reference",
+    "jdt_user_notes",
+    "simpletest",
+    "date",
+    "jdt_content_type_article",
+    "jdt_view_articles",
+    "jdt_user_notes",
+  );
   module_enable($module_list);
   $disable_list = array("toolbar",
     "shortcut",
-    "overlay"
-    );
+    "overlay",
+  );
   module_disable($disable_list);
-
-  // reset the schema version everytime for testing ONLY.
-  drupal_set_installed_schema_version("jdt_core","0");
 }
-
-function jdt_core_update_7100(){
-  $module_list = array("date",
-    "jdt_content_type_article",
-    "jdt_view_articles"
-    );
-  module_enable($module_list);
-}
-
-
