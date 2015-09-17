@@ -31,6 +31,7 @@ function jdt_user_notes_permission() {
  * Added url path for notes CURD.
  */
 function jdt_user_notes_menu() {
+  global $user;
   $items['node/%jdt_user_notes_loader/jdt_user_notes/create'] = array(
     'title' => 'New note',
     'page callback' => 'drupal_get_form',
@@ -40,11 +41,12 @@ function jdt_user_notes_menu() {
     'weight' => 5,
   );
   $items['node/%jdt_user_notes_loader/jdt_user_notes/view'] = array(
-    'title' => 'View notes',
-    'page callback' => 'drupal_get_form',
+    'title' => 'My notes',
+    'page callback' => 'note_display_menu_call_back',
     'page arguments' => array('jdt_user_notes_read_form', 1),
     'access arguments' => array('editor jdt user notes'),
     'type' => MENU_LOCAL_TASK,
+    //'type' => MENU_NORMAL_ITEM,
     'weight' => 6,
   );
   $items['node/%jdt_user_notes_loader/jdt_user_notes/edit'] = array(
@@ -53,11 +55,15 @@ function jdt_user_notes_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('jdt_user_notes_edit_form', 1),
     'access arguments' => array('editor jdt user notes'),
-    'theme callback' => '',
+    'theme callback' => 'theme_call_back',
     'type' => MENU_LOCAL_TASK,
     'weight' => 7,
   );
   return $items;
+}
+function theme_call_back(){
+
+  return variable_get('theme_default',NULL);
 }
 
 /**
@@ -69,7 +75,23 @@ function jdt_user_notes_loader_load($nid) {
   if ($return_val != FALSE) {
     $return_val = $nid;
   }
+
   return $return_val;
+}
+
+function jdt_user_notes_menu_local_tasks_alter(&$data,$router_item,$root_path){
+  $nid = $router_item['page_arguments'][1];
+    // Test if a user has notes on that article in view mode.
+  $records = (array) jdt_user_notes_get_note_by_nid($nid);
+
+
+  if(empty($records)){
+    for($x = 0; $x<count($data['tabs'][0]['output']);$x++){
+      if($data['tabs'][0]['output'][$x]['#link']['path']==="node/%/jdt_user_notes/view"){
+        unset($data['tabs'][0]['output'][$x]);
+      }
+    }
+  }
 }
 
 /**
@@ -124,6 +146,7 @@ function jdt_user_notes_read_form($form, &$form_state, $nid) {
     // For easiness , used disabled forms for Read notes,
     // better approach will be generating markups for the notes.
     // Maybe the owner of the note should be displayed.
+    $user = user_load($record->author_uid);
     $form_name = 'jdt_user_notes_title_field' . $record->note_id;
     $form[$form_name] = array(
       '#type' => 'textfield',
@@ -138,6 +161,13 @@ function jdt_user_notes_read_form($form, &$form_state, $nid) {
       '#title' => t('The note.'),
       '#disabled' => TRUE,
       '#default_value' => $record->note_text,
+    );
+    $form_name = 'jdt_user_notes_author_field' . $record->note_id;
+    $form[$form_name] = array(
+      '#type' => 'textfield',
+      '#title' => t('The author.'),
+      '#disabled' => TRUE,
+      '#default_value' => $user->name,
     );
 
     // Seprater between records.
@@ -261,4 +291,47 @@ function jdt_user_notes_update_form_submit($form, &$form_state) {
 function jdt_user_notes_delete_form_submit($form, &$form_state) {
   $note_id = $form_state['triggering_element']['#name'];
   jdt_user_notes_delete_note($note_id);
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * List the theme hooks.
+ */
+function jdt_user_notes_theme(){
+  $items = array(
+    'jdt_user_notes_display' => array(
+      'variables' => array('#theme' => NULL, 'form' => NULL, 'display' => NULL),
+      'template' => 'notes',
+      ),
+    );
+  return $items;
+}
+
+function note_display_menu_call_back($form_name,$nid){
+  $form = drupal_get_form($form_name,$nid);
+  $render['#theme'] = 'jdt_user_notes_display';
+  $render['#form'] = $form;
+  $display = array();
+  $counter = 0;
+  foreach ($form as $key => $value) {
+
+    if (strpos($key, 'jdt_user_notes_title') === 0) {
+      $display[$counter][0] = $value['#default_value'];
+    }
+    if (strpos($key, 'jdt_user_notes_text') === 0) {
+      $display[$counter][1] = $value['#default_value'];
+    }
+    if (strpos($key, 'jdt_user_notes_author') === 0) {
+      $display[$counter][2] = $value['#default_value'];
+    }
+
+    if (strpos($key, 'line') === 0) {
+      $counter++;
+    }
+  }
+  $render['#display'] = $display;
+
+  return drupal_render($render);
+
 }
