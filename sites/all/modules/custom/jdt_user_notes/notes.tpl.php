@@ -8,5 +8,5 @@
  */
 ?>
 This is module self-themed!
-<?php print render($form);?>
+
 

@@ -10,16 +10,18 @@
 This is overriden.
 
 <div class='note-wrapper'>
-<?php
-
-  foreach ($display as $entry){
+  <?php
+  ctools_include('modal');
+  ctools_modal_add_js();
+  foreach ($records as $entry){
+    $user = user_load($entry->author_uid);
     print "<div class='note-container'>";
-    print "<div class='note-text'>" . $entry[0] . "</div>";
-    print "<div class='note-title'>" . $entry[1] . "</div>";
-    print "<div class='note-author'>" . $entry[2] . "</div>";
+    print "<div class='note-text'>" . $entry->note_text . "</div>";
+    print "<div class='note-title'>" . $entry->note_title . "</div>";
+    print "<div class='note-author'>" . $user->name . "</div>";
+    print "<div class='note-edit-link'><a class='ctools-use-modal' href='/note/" . $entry->note_id . "/nojs/edit'>Edit</a></div>";
     print "</div>";
   }
 
-
-?>
+  ?>
 </div>
