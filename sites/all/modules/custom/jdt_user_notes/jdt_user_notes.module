@@ -516,7 +516,7 @@ function jdt_user_notes_node_view_alter(&$build){
    ctools_include('modal');
    ctools_modal_add_js();
    $build['#node']->content['my_additional_field'] = array(
-    '#markup' => l('Create new note', 'node/'.$build['field_slug']['#object']->vid
+    '#markup' => l('Create new note', 'node/'.$build['#node']->vid
 .'/jdt_user_notes/nojs/create', array(
       'attributes' => array('class' => 'ctools-use-modal'))),
     '#weight' => 0,
