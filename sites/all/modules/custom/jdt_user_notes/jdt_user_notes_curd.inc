@@ -80,3 +80,5 @@ function jdt_user_notes_get_note_by_nid($nid) {
     ->fetchAllAssoc('note_id');
   return $record;
 }
+
+

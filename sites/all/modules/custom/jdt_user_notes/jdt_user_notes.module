@@ -17,11 +17,11 @@ function jdt_user_notes_permission() {
     'administer jdt user notes' => array(
       'title' => t('Adminster JDT user notes.'),
       'restrict access' => TRUE,
-    ),
+      ),
     'editor jdt user notes' => array(
       'title' => t('The permission to access notes only belong to user.'),
-    ),
-  );
+      ),
+    );
 }
 
 
@@ -39,7 +39,7 @@ function jdt_user_notes_menu() {
     'access arguments' => array('editor jdt user notes'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 5,
-  );
+    );
   $items['node/%jdt_user_notes_loader/jdt_user_notes/view'] = array(
     'title' => 'My notes',
     'page callback' => 'note_display_menu_call_back',
@@ -48,7 +48,7 @@ function jdt_user_notes_menu() {
     'type' => MENU_LOCAL_TASK,
     //'type' => MENU_NORMAL_ITEM,
     'weight' => 6,
-  );
+    );
   $items['node/%jdt_user_notes_loader/jdt_user_notes/edit'] = array(
     // Interesting happens if I use /edit in the path.  see themecallback
     'title' => 'Edit notes',
@@ -58,15 +58,20 @@ function jdt_user_notes_menu() {
     'theme callback' => 'theme_call_back',
     'type' => MENU_LOCAL_TASK,
     'weight' => 7,
-  );
+    );
   $items['note/%jdt_user_notes_note_loader/%ctools_js/edit'] = array(
-    'title' => 'Note',
+    'title' => 'Note edit',
     'page callback' => 'jdt_user_notes_edit_solely_form_callback',
     'page arguments' => array('jdt_user_notes_edit_solely_form', 1,2),
     'access arguments' => array('editor jdt user notes'),
     'theme callback' => 'theme_call_back',
-  );
-
+    );
+  $items['note/%jdt_user_notes_note_loader/view'] = array(
+    'title' => 'Note view',
+    'page callback' => 'jdt_user_notes_single_view_callback',
+    'page arguments' => array(1),
+    'access arguments' => array('editor jdt user notes'),
+    );
 
   return $items;
 }
@@ -122,29 +127,29 @@ function jdt_user_notes_create_form($form, &$form_state, $nid) {
     '#title' => t('The note title.'),
     '#description' => t("Maximum 255 characters"),
     '#required' => TRUE,
-  );
+    );
   $form['jdt_user_notes_note_field'] = array(
     '#type' => 'textarea',
     '#title' => t('The note.'),
-  );
+    );
   $form['actions'] = array(
     '#type' => 'actions',
     'submit' => array(
       '#type' => 'submit',
       '#value' => 'Create Note',
       '#submit' => array('jdt_user_notes_create_form_submit'),
-    ),
-  );
+      ),
+    );
   // Passing nid in the form.
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $nid,
-  );
+    );
   if ( $form_state['submitted']){
-      $commands[] = ctools_modal_command_dismiss();
-      $commands[] = ctools_ajax_command_redirect('node/'.$nid.'/jdt_user_notes/view');
-       print ajax_render($commands);
-       exit;
+    $commands[] = ctools_modal_command_dismiss();
+    $commands[] = ctools_ajax_command_redirect('node/'.$nid.'/jdt_user_notes/view');
+    print ajax_render($commands);
+    exit;
   }
 
   return $form;
@@ -178,7 +183,7 @@ function jdt_user_notes_read_form($form, &$form_state, $nid) {
       '#title' => t('The note title.'),
       '#disabled' => TRUE,
       '#default_value' => $record->note_title,
-    );
+      );
 
     $form_name = 'jdt_user_notes_text_field' . $record->note_id;
     $form[$form_name] = array(
@@ -186,21 +191,21 @@ function jdt_user_notes_read_form($form, &$form_state, $nid) {
       '#title' => t('The note.'),
       '#disabled' => TRUE,
       '#default_value' => $record->note_text,
-    );
+      );
     $form_name = 'jdt_user_notes_author_field' . $record->note_id;
     $form[$form_name] = array(
       '#type' => 'textfield',
       '#title' => t('The author.'),
       '#disabled' => TRUE,
       '#default_value' => $user->name,
-    );
+      );
 
     // Seprater between records.
     $field_name = 'line' . $record->note_id;
     $form[$field_name] = array(
       '#type' => 'item',
       '#markup' => '<hr>',
-    );
+      );
 
   }
   return $form;
@@ -232,7 +237,7 @@ function jdt_user_notes_edit_form($form, &$form_state, $nid) {
       '#required' => TRUE,
       '#weight' => $weight,
       '#default_value' => $record->note_title,
-    );
+      );
     $weight++;
 
     $field_name = 'jdt_user_notes_text_field' . $record->note_id;
@@ -242,7 +247,7 @@ function jdt_user_notes_edit_form($form, &$form_state, $nid) {
       '#weight' => $weight,
       '#disabled' => !$can_edit,
       '#default_value' => $record->note_text,
-    );
+      );
     $weight++;
 
     if (!$can_edit) {
@@ -251,7 +256,7 @@ function jdt_user_notes_edit_form($form, &$form_state, $nid) {
         '#type' => 'item',
         '#markup' => t("You are not permitted to edit this note."),
         '#weight' => $weight,
-      );
+        );
       $weight++;
     }
 
@@ -265,8 +270,8 @@ function jdt_user_notes_edit_form($form, &$form_state, $nid) {
         '#value' => 'Update',
         '#name' => $record->note_id,
         '#submit' => array('jdt_user_notes_update_form_submit'),
-      ),
-    );
+        ),
+      );
     $weight++;
 
     $button_name = 'jdt_user_notes_delete_button' . $record->note_id;
@@ -279,8 +284,8 @@ function jdt_user_notes_edit_form($form, &$form_state, $nid) {
         '#value' => 'Delete Note',
         '#name' => $record->note_id,
         '#submit' => array('jdt_user_notes_delete_form_submit'),
-      ),
-    );
+        ),
+      );
     $weight++;
 
     $field_name = 'line' . $record->note_id;
@@ -288,24 +293,24 @@ function jdt_user_notes_edit_form($form, &$form_state, $nid) {
       '#type' => 'item',
       '#markup' => '<hr>',
       '#weight' => $weight,
-    );
+      );
     $weight++;
 
   }
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $nid,
-  );
+    );
   return $form;
 }
 function jdt_user_notes_edit_solely_form_callback($form_id,$note_id,$js = FALSE){
-    if ($js) {
+  if ($js) {
     ctools_include('ajax');
     ctools_include('modal');
     $form_state = array(
       'ajax' => TRUE,
       'title' => t('Login'),
-    );
+      );
     $form_state['build_info']['args'] = array($note_id);
     $output = ctools_modal_form_wrapper($form_id, $form_state);
 
@@ -324,13 +329,13 @@ function jdt_user_notes_edit_solely_form_callback($form_id,$note_id,$js = FALSE)
 }
 
 function jdt_user_notes_get_create_form_callback($form_id,$note_id,$js=FALSE){
-      if ($js) {
+  if ($js) {
     ctools_include('ajax');
     ctools_include('modal');
     $form_state = array(
       'ajax' => TRUE,
       'title' => t('Login'),
-    );
+      );
     $form_state['build_info']['args'] = array($note_id);
     $output = ctools_modal_form_wrapper($form_id, $form_state);
 
@@ -430,12 +435,12 @@ function jdt_user_notes_edit_solely_form($form, &$form_state, $note_id){
   $form['nid'] = array(
     '#type' => 'value',
     '#value' => $record->article_nid,
-  );
+    );
   if ( $form_state['submitted']){
-      $commands[] = ctools_modal_command_dismiss();
-      $commands[] = ctools_ajax_command_reload();
-       print ajax_render($commands);
-       exit;
+    $commands[] = ctools_modal_command_dismiss();
+    $commands[] = ctools_ajax_command_reload();
+    print ajax_render($commands);
+    exit;
   }
   return $form;
 }
@@ -469,20 +474,37 @@ function jdt_user_notes_delete_form_submit($form, &$form_state) {
  * List the theme hooks.
  */
 function jdt_user_notes_theme(){
-  $items = array(
-    'jdt_user_notes_display' => array(
+
+  $items['jdt_user_notes_display'] =
+     array(
       'variables' => array('#theme' => NULL, 'records' => NULL),
       'template' => 'notes',
-      ),
-    );
+      );
+  $items['jdt_user_single_note_display'] =
+    array(
+      'variables' => array('#theme' => NULL, 'record' => NULL),
+      );
+
   return $items;
 }
 
 function note_display_menu_call_back($nid){
+/*
   $records = jdt_user_notes_get_note_by_nid($nid);
 
   $render['#records'] = $records;
   $render['#theme'] = 'jdt_user_notes_display';
+  return drupal_render($render);
+*/
+  $output = '';
+  $records = jdt_user_notes_get_note_by_nid($nid);
+  foreach($records as $record){
+    $render['#record'] = $record;
+    $render['#theme'] = 'jdt_user_single_note_display';
+    $output .= render($render);
+  }
+  return $output;
+
 /*
   $form = drupal_get_form($form_name,$nid);
   $render['#theme'] = 'jdt_user_notes_display';
@@ -507,8 +529,14 @@ function note_display_menu_call_back($nid){
   }
   $render['#display'] = $display;
 */
-  return drupal_render($render);
 
+
+}
+function jdt_user_notes_single_view_callback($note_id){
+  $record  = jdt_user_notes_read_note($note_id);
+  $render['#record'] = $record;
+  $render['#theme'] = 'jdt_user_single_note_display';
+  return drupal_render($render);
 }
 
 function jdt_user_notes_node_view_alter(&$build){
@@ -517,9 +545,67 @@ function jdt_user_notes_node_view_alter(&$build){
    ctools_modal_add_js();
    $build['#node']->content['my_additional_field'] = array(
     '#markup' => l('Create new note', 'node/'.$build['#node']->vid
-.'/jdt_user_notes/nojs/create', array(
-      'attributes' => array('class' => 'ctools-use-modal'))),
+      .'/jdt_user_notes/nojs/create', array(
+        'attributes' => array('class' => 'ctools-use-modal'))),
     '#weight' => 0,
     );
+ }
+}
+
+function jdt_user_notes_block_info(){
+  $blocks['onboard_stats']= array(
+    'info' => t('Some statistics for site'),
+    'cache' => DRUPAL_NO_CACHE,  // only for development use CACHE_PER_ROLE by default
+
+    );
+  $blocks['some_test']= array(
+    'info' => t('Some test for site'),
+    'cache' => DRUPAL_NO_CACHE,  // only for development use CACHE_PER_ROLE by default
+    );
+  return $blocks;
+}
+
+function jdt_user_notes_block_view($delta = ''){
+  $blocak = array();
+  switch ($delta){
+    case 'onboard_stats':
+    $block['subject'] = 'The stats for the site';
+    $block['content'] = jdt_user_notes_stats_block_content();
+    break;
+    case 'some_test':
+    $block['subject'] = 'Tests';
+    $block['content'] = "it's only a test";
+    break;
   }
+  return $block;
+}
+
+function jdt_user_notes_stats_block_content(){
+  $output = '';
+  $record = db_select('node', 'n')
+  ->fields('n')
+  ->condition('type', 'article')
+  ->execute()
+  ->fetchAllAssoc('nid');
+  $number_of_articles = count($record);
+
+  $output .= t("<p>The number of articles is: ". $number_of_articles."</p>");
+
+  $record = db_select('jdt_user_notes_table', 't')
+  ->fields('t')
+  ->execute()
+  ->fetchAllAssoc('note_id');
+  $number_of_notes = count($record);
+
+  $output .= t("<p>The number of notes is: ". $number_of_notes."</p>");
+
+   $record = db_select('users', 'u')
+  ->fields('u')
+  ->execute()
+  ->fetchAllAssoc('uid');
+  $number_of_users = count($record);
+
+  $output .= t("<p>The number of authenticated users is: ". $number_of_users."</p>");
+
+  return $output;
 }
