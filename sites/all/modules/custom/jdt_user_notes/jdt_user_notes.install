@@ -11,7 +11,7 @@
  * Enable the feature storing permission informations.
  */
 function jdt_user_notes_enable() {
-  $module_list = array("jdt_user_notes_permissions",
+  $module_list = array("jdt_user_notes_permissions", "jdt_view_notes"
   );
   module_enable($module_list);
 }

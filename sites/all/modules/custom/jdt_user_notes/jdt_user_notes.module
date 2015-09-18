@@ -609,3 +609,9 @@ function jdt_user_notes_stats_block_content(){
 
   return $output;
 }
+
+function jdt_user_notes_views_api(){
+  return array(
+    'api' => '3',
+    );
+}

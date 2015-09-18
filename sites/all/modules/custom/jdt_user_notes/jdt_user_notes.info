@@ -3,4 +3,5 @@ description = My little on board module is getting tough.
 core = 7.x
 
 files[] = jdt_user_notes.test
+files[] = jdt_user_notes.views.inc
 dependencies[] = features
